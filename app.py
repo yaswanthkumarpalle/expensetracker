@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, session, redirect, url_for
 import os
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "development-key")
-app = Flask(__name__)
 
 
 @app.route('/', methods=['GET', 'POST'])
