@@ -1,0 +1,349 @@
+/* ==============================
+   GENERAL PAGE
+============================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #333;
+    padding: 40px 20px;
+}
+
+
+/* ==============================
+   MAIN CONTAINER
+============================== */
+
+body > h1,
+body > form,
+body > hr,
+body > h2,
+body > ul,
+body > a {
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* ==============================
+   HEADER
+============================== */
+
+h1 {
+    text-align: center;
+    color: white;
+    font-size: 42px;
+    margin-bottom: 30px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+
+/* ==============================
+   FORM CARD
+============================== */
+
+form {
+    background: rgba(255, 255, 255, 0.97);
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    margin-bottom: 30px;
+}
+
+
+/* ==============================
+   LABELS
+============================== */
+
+form label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #444;
+    margin-top: 5px;
+}
+
+
+/* ==============================
+   TEXT + NUMBER INPUT
+============================== */
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 14px 16px;
+
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+
+    font-size: 16px;
+    outline: none;
+
+    background-color: #f9fafb;
+
+    transition: all 0.3s ease;
+}
+
+
+/* Input focus */
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+    border-color: #667eea;
+    background-color: white;
+
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+}
+
+
+/* Placeholder */
+
+input::placeholder {
+    color: #999;
+}
+
+
+/* ==============================
+   ADD EXPENSE BUTTON
+============================== */
+
+input[type="submit"] {
+    margin-top: 10px;
+
+    padding: 14px 20px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: linear-gradient(
+        135deg,
+        #667eea,
+        #764ba2
+    );
+
+    color: white;
+
+    font-size: 17px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+
+/* Button hover */
+
+input[type="submit"]:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(102, 126, 234, 0.35);
+}
+
+
+/* Button click */
+
+input[type="submit"]:active {
+    transform: translateY(0);
+}
+
+
+/* ==============================
+   HORIZONTAL LINE
+============================== */
+
+hr {
+    border: none;
+
+    height: 1px;
+
+    background: rgba(255, 255, 255, 0.3);
+
+    margin: 25px auto;
+}
+
+
+/* ==============================
+   EXPENSE TITLE
+============================== */
+
+h2 {
+    text-align: center;
+
+    color: white;
+
+    margin-top: 25px;
+    margin-bottom: 18px;
+
+    font-size: 24px;
+}
+
+
+/* ==============================
+   EXPENSE LIST
+============================== */
+
+ul {
+    list-style: none;
+
+    padding: 0;
+
+    margin-bottom: 20px;
+}
+
+
+/* ==============================
+   EXPENSE ITEM
+============================== */
+
+li {
+    background: rgba(255, 255, 255, 0.97);
+
+    margin: 12px 0;
+
+    padding: 18px 20px;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.12);
+
+    font-size: 17px;
+
+    font-weight: 500;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    transition: all 0.3s ease;
+}
+
+
+/* Expense hover */
+
+li:hover {
+    transform: translateX(5px);
+
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.18);
+}
+
+
+/* ==============================
+   TOTAL EXPENSE
+============================== */
+
+body > h2:last-of-type {
+    background: rgba(255, 255, 255, 0.97);
+
+    color: #2c3e50;
+
+    padding: 20px;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.15);
+
+    font-size: 25px;
+
+    margin-top: 25px;
+}
+
+
+/* ==============================
+   CLEAR BUTTON
+============================== */
+
+a {
+    text-decoration: none;
+}
+
+
+a button {
+    display: block;
+
+    margin: 25px auto;
+
+    padding: 13px 25px;
+
+    background: linear-gradient(
+        135deg,
+        #ff5f6d,
+        #d32f2f
+    );
+
+    color: white;
+
+    border: none;
+
+    border-radius: 10px;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+
+/* Clear button hover */
+
+a button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(211, 47, 47, 0.35);
+}
+
+
+/* ==============================
+   MOBILE RESPONSIVE
+============================== */
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 25px 15px;
+    }
+
+    h1 {
+        font-size: 32px;
+    }
+
+    form {
+        padding: 22px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        font-size: 15px;
+    }
+
+    li {
+        font-size: 15px;
+        padding: 15px;
+    }
+
+    body > h2:last-of-type {
+        font-size: 20px;
+    }
+}
