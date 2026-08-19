@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Expense Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen pb-12 font-sans">
+  <header class="bg-slate-800 border-b border-slate-700 py-6 mb-8 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <h1 class="text-2xl font-bold text-indigo-400 flex items-center gap-2">
+        <span>📊</span> Category Expense Tracker
+      </h1>
+      <div class="flex items-center gap-2">
+        <label for="filter-date" class="text-sm font-medium text-slate-400">Date:</label>
+        <input type="date" id="filter-date" class="bg-slate-700 border border-slate-600 rounded px-3 py-1 text-sm text-white focus:outline-none focus:border-indigo-500">
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <!-- Left Column: Input Form & Expense List -->
+    <div class="lg:col-span-6 space-y-8">
+      
+      <!-- Expense Entry Card -->
+      <section class="bg-indigo-100 rounded-xl p-6 border border-indigo-300 shadow-lg shadow-indigo-500/20">
+        <h2 class="text-lg font-semibold text-black mb-4">Add Expense</h2>
+        
+        <div id="alert-box" class="hidden mb-4 p-3 rounded text-sm font-medium"></div>
+
+        <form id="expense-form" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-black uppercase tracking-wider mb-2">Category *</label>
+            <select id="category" required class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="" disabled selected class="bg-white text-black">-- Select Expense Category --</option>
+              {% for cat in categories %}
+                <option value="{{ cat }}" class="bg-white text-black">{{ cat }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-black uppercase tracking-wider mb-2">Description *</label>
+              <input type="text" id="description" placeholder="e.g., Breakfast" required class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-black uppercase tracking-wider mb-2">Amount (₹) *</label>
+              <input type="number" step="0.01" min="0.01" id="amount" placeholder="0.00" required class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-black uppercase tracking-wider mb-2">Date</label>
+              <input type="date" id="expense-date" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-black uppercase tracking-wider mb-2">Notes (Optional)</label>
+              <input type="text" id="notes" placeholder="e.g., Dosa and coffee" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+          </div>
+
+          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-lg transition-colors shadow-lg shadow-indigo-600/30">
+            Submit Expense
+          </button>
+        </form>
+      </section>
+
+    </div>
+
+    <!-- Right Column: Expense List, Calculate & Analytics -->
+    <div class="lg:col-span-6 space-y-8">
+
+      <!-- Submitted Expenses List Card -->
+      <section class="bg-indigo-100 rounded-xl p-6 border border-indigo-300 shadow-lg shadow-indigo-500/20">
+        <div class="flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
+          <h2 class="text-lg font-semibold text-black">Expense List</h2>
+          <button id="clear-all-btn" type="button" class="text-sm font-medium text-rose-300 hover:text-rose-200 transition-colors">
+            Clear all expenses
+          </button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-800">
+            <thead class="bg-indigo-200 text-black text-xs uppercase">
+              <tr>
+                <th class="px-4 py-3">Category</th>
+                <th class="px-4 py-3">Description</th>
+                <th class="px-4 py-3">Amount</th>
+                <th class="px-4 py-3">Action</th>
+              </tr>
+            </thead>
+            <tbody id="expense-table-body" class="divide-y divide-indigo-200">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+      
+      <!-- Analysis Trigger Card -->
+      <section class="bg-indigo-100 rounded-xl p-6 border border-indigo-300 shadow-lg shadow-indigo-500/20">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div>
+            <h2 class="text-lg font-semibold text-black">Calculations & Insights</h2>
+            <p class="text-xs text-slate-800">Calculate category totals and percentage breakdown.</p>
+          </div>
+          <button id="calculate-btn" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors shadow-lg shadow-emerald-600/30">
+            Calculate Expenses
+          </button>
+        </div>
+      </section>
+
+      <!-- Overall Total & Summary Cards -->
+      <section id="results-section" class="hidden space-y-8">
+        
+        <!-- Summary Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-slate-800 border border-slate-700 p-5 rounded-xl flex flex-col justify-between">
+            <span class="text-xs uppercase font-semibold text-slate-400">Total Daily Spending</span>
+            <span id="total-spending" class="text-3xl font-extrabold text-emerald-400 mt-2">₹0.00</span>
+          </div>
+          <div class="bg-slate-800 border border-slate-700 p-5 rounded-xl flex flex-col justify-between">
+            <span class="text-xs uppercase font-semibold text-slate-400">Highest Spending Category</span>
+            <span id="top-category" class="text-xl font-bold text-amber-400 mt-2">N/A</span>
+          </div>
+        </div>
+
+        <!-- Chart Visualization -->
+        <section class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-md">
+          <h3 class="text-md font-semibold text-white mb-4">Visual Spending Breakdown</h3>
+          <div class="w-full max-w-xs mx-auto">
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </section>
+
+        <!-- Category Progress Bars -->
+        <section class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-md space-y-4">
+          <h3 class="text-md font-semibold text-white mb-2">Category Percentages</h3>
+          <div id="category-progress-list" class="space-y-4">
+            <!-- Dynamically populated -->
+          </div>
+        </section>
+
+      </section>
+
+    </div>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
