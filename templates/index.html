@@ -27,7 +27,7 @@
       
       <!-- Expense Entry Card -->
       <section class="bg-indigo-100 rounded-xl p-6 border border-indigo-300 shadow-lg shadow-indigo-500/20">
-        <h2 class="text-lg font-semibold text-black mb-4">Add Expense</h2>
+        <h2 id="expense-form-title" class="text-lg font-semibold text-black mb-4">Add Expense</h2>
         
         <div id="alert-box" class="hidden mb-4 p-3 rounded text-sm font-medium"></div>
 
@@ -66,8 +66,11 @@
             </div>
           </div>
 
-          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-lg transition-colors shadow-lg shadow-indigo-600/30">
+          <button id="submit-expense-btn" type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-lg transition-colors shadow-lg shadow-indigo-600/30">
             Submit Expense
+          </button>
+          <button id="cancel-edit-btn" type="button" class="hidden w-full border border-slate-500 text-slate-700 hover:bg-slate-200 font-medium py-3 rounded-lg transition-colors">
+            Cancel Edit
           </button>
         </form>
       </section>

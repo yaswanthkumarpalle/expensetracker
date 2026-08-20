@@ -6,12 +6,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const expenseTableBody = document.getElementById("expense-table-body");
   const calculateBtn = document.getElementById("calculate-btn");
   const clearAllBtn = document.getElementById("clear-all-btn");
+  const formTitle = document.getElementById("expense-form-title");
+  const submitExpenseBtn = document.getElementById("submit-expense-btn");
+  const cancelEditBtn = document.getElementById("cancel-edit-btn");
   const resultsSection = document.getElementById("results-section");
   const totalSpendingEl = document.getElementById("total-spending");
   const topCategoryEl = document.getElementById("top-category");
   const categoryProgressList = document.getElementById("category-progress-list");
 
   let chartInstance = null;
+  let editingExpenseId = null;
 
   // Initialize dates with today's date
   const today = new Date().toISOString().split("T")[0];
@@ -40,8 +44,9 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     try {
-      const res = await fetch("/api/expenses", {
-        method: "POST",
+      const isEditing = editingExpenseId !== null;
+      const res = await fetch(isEditing ? `/api/expenses/${editingExpenseId}` : "/api/expenses", {
+        method: isEditing ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
@@ -53,9 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      showAlert("Expense added successfully!", "success");
-      expenseForm.reset();
-      expenseDateInput.value = filterDateInput.value;
+      showAlert(isEditing ? "Expense updated successfully!" : "Expense added successfully!", "success");
+      resetExpenseForm();
       
       // Instantly refresh expenses
       fetchExpenses();
@@ -85,6 +89,11 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       showAlert("Network error occurred.", "error");
     }
+  });
+
+  cancelEditBtn.addEventListener("click", () => {
+    resetExpenseForm();
+    hideAlert();
   });
 
   async function fetchExpenses() {
@@ -123,11 +132,14 @@ document.addEventListener("DOMContentLoaded", () => {
         </td>
         <td class="px-4 py-3 font-semibold text-emerald-400">₹${item.amount.toFixed(2)}</td>
         <td class="px-4 py-3">
-          <button onclick="deleteExpense(${item.id})" class="text-rose-400 hover:text-rose-300 font-medium text-xs">
-            Delete
-          </button>
+          <div class="flex gap-3">
+            <button type="button" class="edit-expense-btn text-indigo-600 hover:text-indigo-800 font-medium text-xs">Edit</button>
+            <button type="button" class="delete-expense-btn text-rose-500 hover:text-rose-700 font-medium text-xs">Delete</button>
+          </div>
         </td>
       `;
+      tr.querySelector(".edit-expense-btn").addEventListener("click", () => startEdit(item));
+      tr.querySelector(".delete-expense-btn").addEventListener("click", () => window.deleteExpense(item.id));
       expenseTableBody.appendChild(tr);
     });
   }
@@ -147,6 +159,30 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Failed to delete expense:", err);
     }
   };
+
+  function startEdit(item) {
+    editingExpenseId = item.id;
+    document.getElementById("category").value = item.category;
+    document.getElementById("description").value = item.description;
+    document.getElementById("amount").value = item.amount;
+    expenseDateInput.value = item.date;
+    document.getElementById("notes").value = item.notes || "";
+    formTitle.textContent = "Edit Expense";
+    submitExpenseBtn.textContent = "Save Changes";
+    cancelEditBtn.classList.remove("hidden");
+    hideAlert();
+    expenseForm.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("description").focus();
+  }
+
+  function resetExpenseForm() {
+    editingExpenseId = null;
+    expenseForm.reset();
+    expenseDateInput.value = filterDateInput.value;
+    formTitle.textContent = "Add Expense";
+    submitExpenseBtn.textContent = "Submit Expense";
+    cancelEditBtn.classList.add("hidden");
+  }
 
   async function calculateExpenses() {
     const selectedDate = filterDateInput.value;

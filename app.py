@@ -91,6 +91,53 @@ def add_expense():
 
     return jsonify(dict(new_expense)), 201
 
+
+@app.route("/api/expenses/<int:expense_id>", methods=["PUT"])
+def update_expense(expense_id):
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "Request body must be a JSON object."}), 400
+
+    category = get_text(data, "category")
+    description = get_text(data, "description")
+    amount = data.get("amount")
+    expense_date = get_text(data, "date") or date.today().isoformat()
+    notes = get_text(data, "notes")
+
+    if not category or category not in PREDEFINED_CATEGORIES:
+        return jsonify({"error": "Please select a valid expense category."}), 400
+    if not description:
+        return jsonify({"error": "Expense description cannot be empty."}), 400
+
+    try:
+        amount = float(amount)
+        if not isfinite(amount) or amount <= 0:
+            return jsonify({"error": "Amount must be greater than Rs. 0."}), 400
+    except (TypeError, ValueError):
+        return jsonify({"error": "Invalid amount format. Enter a valid number."}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        UPDATE expenses
+        SET category = ?, description = ?, amount = ?, date = ?, notes = ?
+        WHERE id = ?
+        """,
+        (category, description, amount, expense_date, notes, expense_id),
+    )
+    conn.commit()
+
+    if cursor.rowcount == 0:
+        conn.close()
+        return jsonify({"error": "Expense not found."}), 404
+
+    updated_expense = conn.execute(
+        "SELECT * FROM expenses WHERE id = ?", (expense_id,)
+    ).fetchone()
+    conn.close()
+    return jsonify(dict(updated_expense)), 200
+
 @app.route("/api/expenses/<int:expense_id>", methods=["DELETE"])
 def delete_expense(expense_id):
     conn = get_db_connection()
