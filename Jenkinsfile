@@ -13,10 +13,8 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Testing web application...'
-
                 bat '''
-                if exist index.html (
+                if exist src\\index.html (
                     echo TEST PASSED: index.html exists
                 ) else (
                     echo TEST FAILED
@@ -25,6 +23,7 @@ pipeline {
                 '''
             }
         }
+
 
         stage('Build') {
             steps {
